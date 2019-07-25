@@ -1,10 +1,15 @@
 import React from 'react';
 import { View, Platform, StatusBar } from 'react-native';
-import { Home, AddEntry } from './components';
-import { createBottomTabNavigator, createMaterialTopTabNavigator, createStackNavigator, createAppContainer } from 'react-navigation';
-import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
-import { green, purple, white, darkGreen } from './utils/colors';
 import { Constants } from 'expo';
+import { 
+  createBottomTabNavigator, 
+  createMaterialTopTabNavigator, 
+  createStackNavigator, 
+  createAppContainer 
+} from 'react-navigation';
+import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+import { Decks, AddDeck } from './components';
+import { green, purple, white, darkGreen } from './utils/colors';
 
 function CustomStatusBar({ backgroundColor, ...props }) {
   return (
@@ -15,18 +20,18 @@ function CustomStatusBar({ backgroundColor, ...props }) {
 }
 
 const RoutesConfig = {
-  Home: {
-    screen: Home,
+  Decks: {
+    screen: Decks,
     navigationOptions: {
-      tabBarLabel: "Home",
-      tabBarIcon: ({ tintColor }) => <MaterialCommunityIcons name='cards-outline' size={30} color={tintColor} />
+      tabBarLabel: "Decks",
+      tabBarIcon: ({ tintColor }) => <MaterialCommunityIcons name='cards-outline' size={25} color={tintColor} />
     }
   },
   AddEntry: {
-    screen: AddEntry,
+    screen: AddDeck,
     navigationOptions: {
-      tabBarLabel: "Add",
-      tabBarIcon: ({ tintColor }) => <MaterialIcons name='library-add' size={30} color={tintColor} />
+      tabBarLabel: "Add Deck",
+      tabBarIcon: ({ tintColor }) => <MaterialIcons name='library-add' size={25} color={tintColor} />
     }
   },
 }
@@ -36,9 +41,13 @@ const TabNavigationConfig = {
     header: null
   },
   tabBarOptions: {
+    showIcon: true,
     activeTintColor: Platform.OS === "ios" ? purple : white,
+    labelStyle: {
+      marginTop: 5
+    },
     style: {
-      height: 50,
+      height: 55,
       backgroundColor: Platform.OS === "ios" ? white : green,
       shadowColor: "rgba(0, 0, 0, 0.24)",
       shadowOffset: {
@@ -58,14 +67,14 @@ const IOSTab = createBottomTabNavigator(RoutesConfig, TabNavigationConfig);
 const AndroidTab = createMaterialTopTabNavigator(RoutesConfig, TabNavigationConfig);
 
 const Tabs = createStackNavigator({
-  Home: {
+  Decks: {
     screen: Platform.OS === 'ios' ? IOSTab : AndroidTab,
     navigationOptions: {
       header: null,
     },
   },
-  AddEntry: {
-    screen: AddEntry,
+  AddDeck: {
+    screen: AddDeck,
     navigationOptions: {
       headerTintColor: white,
       headerStyle: {
