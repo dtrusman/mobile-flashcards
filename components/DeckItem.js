@@ -6,7 +6,7 @@ import { green } from '../utils/colors';
 
 const ItemContainer = styled.View`
   width: 100%;
-  height: 70px;
+  height: 80px;
   border-bottom-width: 1px;
   border-bottom-color: #cecece;
   flex-direction: row;
@@ -39,9 +39,9 @@ export default function DeckItem({ item }) {
     return (
         <TouchableOpacity onPress={_onPress}>
             <ItemContainer>
-                <Title>{item.deckTitle}</Title>
+                <Title>{item.title}</Title>
                 <CardsContainer>
-                    <SubTitle>{item.cards}</SubTitle>
+                    <SubTitle>{item.cards.length}</SubTitle>
                     <MaterialCommunityIcons name='cards' size={40} color={green} />
                 </CardsContainer>
             </ItemContainer>

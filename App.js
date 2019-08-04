@@ -1,15 +1,18 @@
 import React from 'react';
 import { View, Platform, StatusBar } from 'react-native';
 import { Constants } from 'expo';
-import { 
-  createBottomTabNavigator, 
-  createMaterialTopTabNavigator, 
-  createStackNavigator, 
-  createAppContainer 
+import {
+  createBottomTabNavigator,
+  createMaterialTopTabNavigator,
+  createStackNavigator,
+  createAppContainer
 } from 'react-navigation';
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { Decks, AddDeck } from './components';
 import { green, purple, white, darkGreen } from './utils/colors';
+import { createStore } from 'redux';
+import { Provider } from 'react-redux';
+import reducers from './reducers';
 
 function CustomStatusBar({ backgroundColor, ...props }) {
   return (
@@ -88,9 +91,11 @@ const AppContainer = createAppContainer(Tabs)
 
 export default function App() {
   return (
-    <View style={{ flex: 1 }}>
-      <CustomStatusBar backgroundColor={green} barStyle="light-content" />
-      <AppContainer />
-    </View>
+    <Provider store={createStore(reducers)}>
+      <View style={{ flex: 1 }}>
+        <CustomStatusBar backgroundColor={green} barStyle="light-content" />
+        <AppContainer />
+      </View>
+    </Provider>
   );
 }
