@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import styled from 'styled-components/native';
 import { green, white, purple, red } from '../utils/colors';
+import { removeDeck } from '../utils/api';
+import { receiveDecks } from '../actions';
 
 const StyledView = styled.View`
     justify-content: center;
@@ -45,6 +47,14 @@ export default class DeckDetail extends Component {
         headerTintColor: white,
     });
 
+    handleDeleteDeck = async () => {
+        const { deck } = this.props.navigation.state.params;
+
+        await removeDeck(deck.id);
+
+        this.props.navigation.navigate('Decks');
+    }
+
     render() {
         const { deck } = this.props.navigation.state.params;
 
@@ -58,7 +68,7 @@ export default class DeckDetail extends Component {
                 <Button style={{ backgroundColor: purple }}>
                     <ButtonText>Start Quiz</ButtonText>
                 </Button>
-                <Button style={{ backgroundColor: red }}>
+                <Button style={{ backgroundColor: red }} onPress={this.handleDeleteDeck}>
                     <ButtonText>Delete Deck</ButtonText>
                 </Button>
             </StyledView>

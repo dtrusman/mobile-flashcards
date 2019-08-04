@@ -5,11 +5,25 @@ import DeckItem from './DeckItem';
 import { connect } from 'react-redux';
 import { receiveDecks } from '../actions';
 import { fetchDecks } from '../utils/api';
+import { green } from '../utils/colors';
 
 const StyledView = styled.View`
   width: ${Dimensions.get('window').width};
   height: ${Dimensions.get('window').height};
   padding: 10px;
+`
+
+const EmptyDeckListContainer = styled.View`
+  justify-content: center;
+  align-items: center;
+  width: ${Dimensions.get('window').width};
+  height: ${Dimensions.get('window').height};
+`
+
+const EmptyDeckListText = styled.Text`
+  font-size: 50px;
+  font-weight: bold;
+  color: ${green};
 `
 
 class Home extends Component {
@@ -18,8 +32,12 @@ class Home extends Component {
     const { dispatch } = this.props;
 
     const decks = await fetchDecks();
-    
+
     dispatch(receiveDecks(decks));
+  }
+
+  static getDerivedStateFromProps(props, state) {
+    
   }
 
   _keyExtractor = item => { return "deck-key-" + item.id };
@@ -35,12 +53,12 @@ class Home extends Component {
   render() {
 
     const { decks } = this.props;
-    
+
     if (Object.values(decks).length === 0) {
       return (
-        <View>
-          <Text>No data found</Text>
-        </View>
+        <EmptyDeckListContainer>
+          <EmptyDeckListText>Add Decks to Play</EmptyDeckListText>
+        </EmptyDeckListContainer>
       )
     }
 
