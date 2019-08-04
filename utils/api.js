@@ -3,7 +3,7 @@ import { AsyncStorage } from 'react-native'
 export const FLASHCARD_STORAGE_KEY = 'Udacity:FlashCards'
 
 export async function fetchDecks() {
-    // await AsyncStorage.clear();
+    await AsyncStorage.clear();
     return AsyncStorage.getItem(FLASHCARD_STORAGE_KEY)
         .then(results => {
             console.log('Fetching data.........', JSON.parse(results))

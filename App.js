@@ -8,7 +8,7 @@ import {
   createAppContainer
 } from 'react-navigation';
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
-import { Decks, AddDeck } from './components';
+import { Decks, AddDeck, DeckDetail } from './components';
 import { green, purple, white, darkGreen } from './utils/colors';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
@@ -84,6 +84,9 @@ const Tabs = createStackNavigator({
         backgroundColor: purple,
       }
     }
+  },
+  DeckDetail: {
+    screen: DeckDetail
   }
 })
 
