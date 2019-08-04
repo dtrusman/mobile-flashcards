@@ -28,6 +28,7 @@ class Home extends Component {
     <DeckItem
       key={item.id}
       item={item}
+      navigation={this.props.navigation}
     />
   )
 

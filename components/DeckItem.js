@@ -30,10 +30,12 @@ const CardsContainer = styled.View`
     padding: 5px;
 `
 
-export default function DeckItem({ item }) {
-
+export default function DeckItem({ item, navigation }) {
     const _onPress = () => {
-        console.log('clicando no item', item.id);
+        navigation.navigate(
+            'DeckDetail', 
+            { title: item.title, deck: item }
+        );
     }
 
     return (
