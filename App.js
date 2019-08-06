@@ -8,7 +8,7 @@ import {
     createAppContainer
 } from 'react-navigation';
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
-import { Decks, AddDeck, DeckDetail, AddCard } from './components';
+import { Decks, AddDeck, DeckDetail, AddCard, Quiz } from './components';
 import { green, purple, white, darkGreen } from './utils/colors';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
@@ -92,6 +92,16 @@ const Tabs = createStackNavigator({
         screen: AddCard,
         navigationOptions: {
             title: "Add Card",
+            headerTintColor: white,
+            headerStyle: {
+                backgroundColor: green,
+            }
+        },
+    },
+    Quiz: {
+        screen: Quiz,
+        navigationOptions: {
+            title: "Quiz",
             headerTintColor: white,
             headerStyle: {
                 backgroundColor: green,

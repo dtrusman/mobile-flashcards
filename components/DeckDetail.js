@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import styled from 'styled-components/native';
 import { green, white, purple, red } from '../utils/colors';
-import { removeDeck } from '../utils/api';
 import { connect } from 'react-redux';
 
 const StyledView = styled.View`
@@ -47,21 +46,17 @@ class DeckDetail extends Component {
         headerTintColor: white,
     });
 
-    handleAddCard = (deck) => {
-        this.props.navigation.navigate("AddCard", { deck });
-    }
-
     render() {
-        const { deck } = this.props;
+        const { deck, navigation } = this.props;
 
         return (
             <StyledView>
                 <Title>{deck.title}</Title>
                 <CardsNumber>{deck.cards.length}</CardsNumber>
-                <Button style={{ backgroundColor: green }} onPress={() => this.handleAddCard(deck)}>
+                <Button style={{ backgroundColor: green }} onPress={() => navigation.navigate("AddCard", { deck })}>
                     <ButtonText>Add Cards</ButtonText>
                 </Button>
-                <Button style={{ backgroundColor: purple }}>
+                <Button style={{ backgroundColor: purple }} onPress={() => navigation.navigate("Quiz", { deck })}>
                     <ButtonText>Start Quiz</ButtonText>
                 </Button>
             </StyledView>
