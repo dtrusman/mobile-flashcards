@@ -30,5 +30,23 @@ export async function removeDeck(id) {
             AsyncStorage.setItem(FLASHCARD_STORAGE_KEY, JSON.stringify(data));
             return id;
         })
-        .then(idDeleted => { return idDeleted});
+        .then(idDeleted => { return idDeleted });
 }
+
+export const saveCard = (deckId, card) => {
+    return AsyncStorage.getItem(FLASHCARD_STORAGE_KEY).then(results => {
+        const data = JSON.parse(results);
+
+        // Add card to existing deck data.
+        data[deckId] = {
+            ...data[deckId],
+            cards: [
+                ...data[deckId].cards,
+                { question: card.question, answer: card.answer }
+            ]
+        };
+
+        // Save updated deck data back to storage
+        AsyncStorage.setItem(FLASHCARD_STORAGE_KEY, JSON.stringify(data));
+    });
+};

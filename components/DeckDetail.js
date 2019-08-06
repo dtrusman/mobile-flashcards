@@ -47,14 +47,18 @@ class DeckDetail extends Component {
         headerTintColor: white,
     });
 
+    handleAddCard = (deck) => {
+        this.props.navigation.navigate("AddCard", { deck });
+    }
+
     render() {
-        const { deck } = this.props.navigation.state.params;
+        const { deck } = this.props;
 
         return (
             <StyledView>
                 <Title>{deck.title}</Title>
                 <CardsNumber>{deck.cards.length}</CardsNumber>
-                <Button style={{ backgroundColor: green }}>
+                <Button style={{ backgroundColor: green }} onPress={() => this.handleAddCard(deck)}>
                     <ButtonText>Add Cards</ButtonText>
                 </Button>
                 <Button style={{ backgroundColor: purple }}>
@@ -65,5 +69,12 @@ class DeckDetail extends Component {
     }
 }
 
+function mapStateToProps(state, {navigation}) {
+    const deckSelected = navigation.getParam('deck');
 
-export default connect()(DeckDetail)
+    return {
+        deck: state[deckSelected.id]
+    }
+}
+
+export default connect(mapStateToProps)(DeckDetail);
