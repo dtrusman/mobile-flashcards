@@ -22,9 +22,13 @@ export async function submitDeck(deck) {
 }
 
 export async function removeDeck(id) {
-    const decks = await fetchDecks();
-
-    delete decks[id];
-
-    return AsyncStorage.setItem(FLASHCARD_STORAGE_KEY, JSON.stringify(decks));
+    return AsyncStorage.getItem(FLASHCARD_STORAGE_KEY)
+        .then((results) => {
+            const data = JSON.parse(results);
+            data[id] = undefined;
+            delete data[id];
+            AsyncStorage.setItem(FLASHCARD_STORAGE_KEY, JSON.stringify(data));
+            return id;
+        })
+        .then(idDeleted => { return idDeleted});
 }

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import styled from 'styled-components/native';
 import { green, white, purple, red } from '../utils/colors';
 import { removeDeck } from '../utils/api';
-import { receiveDecks } from '../actions';
+import { connect } from 'react-redux';
 
 const StyledView = styled.View`
     justify-content: center;
@@ -36,7 +36,7 @@ const ButtonText = styled.Text`
     color: ${white};
 `
 
-export default class DeckDetail extends Component {
+class DeckDetail extends Component {
 
     static navigationOptions = ({ navigation }) => ({
         title: `Deck ${navigation.state.params.title}`,
@@ -46,14 +46,6 @@ export default class DeckDetail extends Component {
         },
         headerTintColor: white,
     });
-
-    handleDeleteDeck = async () => {
-        const { deck } = this.props.navigation.state.params;
-
-        await removeDeck(deck.id);
-
-        this.props.navigation.navigate('Decks');
-    }
 
     render() {
         const { deck } = this.props.navigation.state.params;
@@ -68,10 +60,10 @@ export default class DeckDetail extends Component {
                 <Button style={{ backgroundColor: purple }}>
                     <ButtonText>Start Quiz</ButtonText>
                 </Button>
-                <Button style={{ backgroundColor: red }} onPress={this.handleDeleteDeck}>
-                    <ButtonText>Delete Deck</ButtonText>
-                </Button>
             </StyledView>
         )
     }
 }
+
+
+export default connect()(DeckDetail)

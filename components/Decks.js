@@ -28,54 +28,80 @@ const EmptyDeckListText = styled.Text`
 
 class Home extends Component {
 
-  async componentDidMount() {
-    const { dispatch } = this.props;
+    constructor(props) {
+        super(props);
 
-    const decks = await fetchDecks();
-
-    dispatch(receiveDecks(decks));
-  }
-
-  static getDerivedStateFromProps(props, state) {
-    
-  }
-
-  _keyExtractor = item => { return "deck-key-" + item.id };
-
-  _renderItem = ({ item }) => (
-    <DeckItem
-      key={item.id}
-      item={item}
-      navigation={this.props.navigation}
-    />
-  )
-
-  render() {
-
-    const { decks } = this.props;
-
-    if (Object.values(decks).length === 0) {
-      return (
-        <EmptyDeckListContainer>
-          <EmptyDeckListText>Add Decks to Play</EmptyDeckListText>
-        </EmptyDeckListContainer>
-      )
+        this.state = {
+            decks: {},
+        }
     }
 
-    return (
-      <StyledView>
-        <FlatList
-          data={Object.values(decks)}
-          keyExtractor={this._keyExtractor}
-          renderItem={this._renderItem}
+    componentDidMount() {
+        this.getDecks();
+    }
+
+    getDecks = async () => {
+        const { dispatch } = this.props;
+
+        const decks = await fetchDecks();
+
+        dispatch(receiveDecks(decks));
+
+        this.setState({ decks, updateData: false });
+    }
+
+    static getDerivedStateFromProps(props, state) {
+        if (props.decks !== state.decks) {
+            return {
+                decks: props.decks
+            }
+        }
+
+        return null;
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props.decks !== prevProps.decks) {
+            this.setState({ decks: this.props.decks });
+        }
+    }
+
+    _keyExtractor = item => { return "deck-key-" + item.id };
+
+    _renderItem = ({ item }) => (
+        <DeckItem
+            key={item.id}
+            item={item}
+            navigation={this.props.navigation}
         />
-      </StyledView>
     )
-  }
+
+    render() {
+
+        const { decks } = this.state;
+
+        if (Object.values(decks).length === 0) {
+            return (
+                <EmptyDeckListContainer>
+                    <EmptyDeckListText>Add Decks to Play</EmptyDeckListText>
+                </EmptyDeckListContainer>
+            )
+        }
+
+        return (
+            <StyledView>
+                <FlatList
+                    data={Object.values(decks)}
+                    keyExtractor={this._keyExtractor}
+                    renderItem={this._renderItem}
+                />
+            </StyledView>
+        )
+    }
 }
 
 const mapStateToProps = decks => ({
-  decks
+    decks
 });
 
 export default connect(mapStateToProps)(Home)
