@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Dimensions } from 'react-native';
+import { Dimensions, View } from 'react-native';
 import styled from 'styled-components/native';
 import { connect } from 'react-redux';
 import { green, white, red } from '../utils/colors';
@@ -55,6 +55,24 @@ const BtnCorrect = styled.TouchableOpacity`
 	align-items: center;
 `
 
+const BtnRestart = styled.TouchableOpacity`
+	width: 50%;
+	height: 40px;
+	margin-top: 10px;
+	background-color: ${green};
+	justify-content: center;
+	align-items: center;
+`
+
+const BtnBack = styled.TouchableOpacity`
+	width: 50%;
+	height: 40px;
+	margin-top: 10px;
+	background-color: ${green};
+	justify-content: center;
+	align-items: center;
+`
+
 const BtnIncorrect = styled.TouchableOpacity`
 	width: 50%;
 	height: 40px;
@@ -100,9 +118,10 @@ class Quiz extends Component {
         this.state = {
             totalQuestions: 0,
             remaningQuestions: 1,
-            correctAnswer: 0,
+            correctAnswers: 0,
             showBtn: true,
             currentQuestionIndex: 0,
+            end: false
         }
     }
 
@@ -132,15 +151,17 @@ class Quiz extends Component {
 
     handleCorrection = (correction) => {
         this.setState((prevState) => ({
-            correctAnswer: correction === CORRECTION.CORRECT ? prevState.correctAnswer + 1 : prevState.correctAnswer,
+            correctAnswers: correction === CORRECTION.CORRECT ? prevState.correctAnswers + 1 : prevState.correctAnswers,
             currentQuestionIndex: prevState.currentQuestionIndex + 1 < prevState.totalQuestions ? prevState.currentQuestionIndex + 1 : 0,
             showBtn: !prevState.showBtn,
-            remaningQuestions: prevState.remaningQuestions < prevState.totalQuestions ? prevState.remaningQuestions + 1 : 1
+            remaningQuestions: prevState.remaningQuestions < prevState.totalQuestions ? prevState.remaningQuestions + 1 : 1,
+            end: prevState.remaningQuestions === prevState.totalQuestions ? true : false
         }))
     }
 
     renderAnswer = () => {
         const { showBtn, currentQuestionIndex } = this.state;
+
         const deck = this.props.navigation.getParam('deck');
 
         if (!showBtn) {
@@ -160,19 +181,61 @@ class Quiz extends Component {
         }
     }
 
-    render() {
-        const { totalQuestions, remaningQuestions, currentQuestionIndex } = this.state;
+    restart = () => {
         const deck = this.props.navigation.getParam('deck');
 
+        this.setState({
+            totalQuestions: deck.cards.length,
+            remaningQuestions: 1,
+            correctAnswers: 0,
+            showBtn: true,
+            currentQuestionIndex: 0,
+            end: false
+        })
+    }
+
+    renderFinalResult = () => {
+        const { end, correctAnswers, totalQuestions } = this.state;
+
+        const percent = (correctAnswers / totalQuestions * 100).toPrecision(4);
+
+        if (end) {
+            return (
+                <View>
+                    <Text style={{ color: '#000000' }}>{`${correctAnswers} - ${percent}%`}</Text>
+                    <BtnRestart onPress={this.restart}>
+                        <Text>Restart</Text>
+                    </BtnRestart>
+
+                    <BtnBack onPress={() => this.props.navigation.goBack()}>
+                        <Text>Back</Text>
+                    </BtnBack>
+                </View>
+            )
+        }
+    }
+
+    renderQuestion = () => {
+        const { totalQuestions, remaningQuestions, currentQuestionIndex } = this.state;
+        const deck = this.props.navigation.getParam('deck');
+        return (
+            <View>
+                <QuestionContainer>
+                    <Question>{deck.cards[currentQuestionIndex].question}</Question>
+                    <NumberQuestions>{`${remaningQuestions}/${totalQuestions}`}</NumberQuestions>
+                </QuestionContainer>
+                {this.renderShowBtn()}
+                {this.renderAnswer()}
+            </View>
+        )
+    }
+
+    render() {
+        const { end } = this.state;
         return (
             <StyledView>
                 <Card>
-                    <QuestionContainer>
-                        <Question>{deck.cards[currentQuestionIndex].question}</Question>
-                        <NumberQuestions>{`${remaningQuestions}/${totalQuestions}`}</NumberQuestions>
-                    </QuestionContainer>
-                    {this.renderShowBtn()}
-                    {this.renderAnswer()}
+                    {end ? this.renderFinalResult() : this.renderQuestion()}
                 </Card>
             </StyledView>
         )
