@@ -10,6 +10,11 @@ const StyledView = styled.View`
   padding: 10px;
 `
 
+const ErrorView = styled.View`
+  height: 100%;
+  justify-content: center;
+`
+
 const Card = styled.View`
   width: 100%;
   height: 150px;
@@ -106,140 +111,152 @@ const BtnContainer = styled.View`
 `
 
 const CORRECTION = {
-    CORRECT: 'CORRECT',
-    INCORRECT: 'INCORRECT'
+  CORRECT: 'CORRECT',
+  INCORRECT: 'INCORRECT'
 }
 
 class Quiz extends Component {
 
-    constructor(props) {
-        super(props);
+  constructor(props) {
+    super(props);
 
-        this.state = {
-            totalQuestions: 0,
-            remaningQuestions: 1,
-            correctAnswers: 0,
-            showBtn: true,
-            currentQuestionIndex: 0,
-            end: false
-        }
+    this.state = {
+      totalQuestions: 0,
+      remaningQuestions: 1,
+      correctAnswers: 0,
+      showBtn: true,
+      currentQuestionIndex: 0,
+      end: false
+    }
+  }
+
+  componentDidMount() {
+    const deck = this.props.navigation.getParam('deck');
+
+    if (deck.cards.length > 0) {
+      this.setState({
+        totalQuestions: deck.cards.length
+      });
     }
 
-    componentDidMount() {
-        const deck = this.props.navigation.getParam('deck');
+  }
 
-        this.setState({
-            totalQuestions: deck.cards.length
-        });
+  showAnswer = () => {
+    this.setState({ showBtn: false });
+  }
+
+  renderShowBtn = () => {
+    const { showBtn } = this.state;
+
+    if (showBtn) {
+      return (
+        <BtnShow onPress={this.showAnswer}>
+          <Text>Show Answer</Text>
+        </BtnShow>
+      )
+    }
+  }
+
+  handleCorrection = (correction) => {
+    this.setState((prevState) => ({
+      correctAnswers: correction === CORRECTION.CORRECT ? prevState.correctAnswers + 1 : prevState.correctAnswers,
+      currentQuestionIndex: prevState.currentQuestionIndex + 1 < prevState.totalQuestions ? prevState.currentQuestionIndex + 1 : 0,
+      showBtn: !prevState.showBtn,
+      remaningQuestions: prevState.remaningQuestions < prevState.totalQuestions ? prevState.remaningQuestions + 1 : 1,
+      end: prevState.remaningQuestions === prevState.totalQuestions ? true : false
+    }))
+  }
+
+  renderAnswer = () => {
+    const { showBtn, currentQuestionIndex } = this.state;
+
+    const deck = this.props.navigation.getParam('deck');
+
+    if (!showBtn) {
+      return (
+        <AnswerContainer>
+          <Answer>{deck.cards[currentQuestionIndex].answer}</Answer>
+          <BtnContainer>
+            <BtnCorrect onPress={() => this.handleCorrection(CORRECTION.CORRECT)}>
+              <Text>Correct</Text>
+            </BtnCorrect>
+            <BtnIncorrect onPress={() => this.handleCorrection(CORRECTION.INCORRECT)}>
+              <Text>Inorrect</Text>
+            </BtnIncorrect>
+          </BtnContainer>
+        </AnswerContainer>
+      )
+    }
+  }
+
+  restart = () => {
+    const deck = this.props.navigation.getParam('deck');
+
+    this.setState({
+      totalQuestions: deck.cards.length,
+      remaningQuestions: 1,
+      correctAnswers: 0,
+      showBtn: true,
+      currentQuestionIndex: 0,
+      end: false
+    })
+  }
+
+  renderFinalResult = () => {
+    const { end, correctAnswers, totalQuestions } = this.state;
+
+    const percent = (correctAnswers / totalQuestions * 100).toPrecision(4);
+
+    if (end) {
+      return (
+        <View>
+          <Text style={{ color: '#000000' }}>{`${correctAnswers} - ${percent}%`}</Text>
+          <BtnRestart onPress={this.restart}>
+            <Text>Restart</Text>
+          </BtnRestart>
+
+          <BtnBack onPress={() => this.props.navigation.goBack()}>
+            <Text>Back</Text>
+          </BtnBack>
+        </View>
+      )
+    }
+  }
+
+  renderQuestion = () => {
+    const { totalQuestions, remaningQuestions, currentQuestionIndex } = this.state;
+    const deck = this.props.navigation.getParam('deck');
+    return (
+      <View>
+        <QuestionContainer>
+          <Question>{deck.cards[currentQuestionIndex].question}</Question>
+          <NumberQuestions>{`${remaningQuestions}/${totalQuestions}`}</NumberQuestions>
+        </QuestionContainer>
+        {this.renderShowBtn()}
+        {this.renderAnswer()}
+      </View>
+    )
+  }
+
+  render() {
+    const { end, totalQuestions } = this.state;
+
+    if (totalQuestions === 0) {
+      return (
+        <ErrorView>
+          <Text style={{ color: '#000000', textAlign: "center", fontSize: 20 }}>Sorry, you cannot take a quiz because there are no cards in the deck</Text>
+        </ErrorView>
+      )
     }
 
-    showAnswer = () => {
-        this.setState({ showBtn: false });
-    }
-
-    renderShowBtn = () => {
-        const { showBtn } = this.state;
-
-        if (showBtn) {
-            return (
-                <BtnShow onPress={this.showAnswer}>
-                    <Text>Show Answer</Text>
-                </BtnShow>
-            )
-        }
-    }
-
-    handleCorrection = (correction) => {
-        this.setState((prevState) => ({
-            correctAnswers: correction === CORRECTION.CORRECT ? prevState.correctAnswers + 1 : prevState.correctAnswers,
-            currentQuestionIndex: prevState.currentQuestionIndex + 1 < prevState.totalQuestions ? prevState.currentQuestionIndex + 1 : 0,
-            showBtn: !prevState.showBtn,
-            remaningQuestions: prevState.remaningQuestions < prevState.totalQuestions ? prevState.remaningQuestions + 1 : 1,
-            end: prevState.remaningQuestions === prevState.totalQuestions ? true : false
-        }))
-    }
-
-    renderAnswer = () => {
-        const { showBtn, currentQuestionIndex } = this.state;
-
-        const deck = this.props.navigation.getParam('deck');
-
-        if (!showBtn) {
-            return (
-                <AnswerContainer>
-                    <Answer>{deck.cards[currentQuestionIndex].answer}</Answer>
-                    <BtnContainer>
-                        <BtnCorrect onPress={() => this.handleCorrection(CORRECTION.CORRECT)}>
-                            <Text>Correct</Text>
-                        </BtnCorrect>
-                        <BtnIncorrect onPress={() => this.handleCorrection(CORRECTION.INCORRECT)}>
-                            <Text>Inorrect</Text>
-                        </BtnIncorrect>
-                    </BtnContainer>
-                </AnswerContainer>
-            )
-        }
-    }
-
-    restart = () => {
-        const deck = this.props.navigation.getParam('deck');
-
-        this.setState({
-            totalQuestions: deck.cards.length,
-            remaningQuestions: 1,
-            correctAnswers: 0,
-            showBtn: true,
-            currentQuestionIndex: 0,
-            end: false
-        })
-    }
-
-    renderFinalResult = () => {
-        const { end, correctAnswers, totalQuestions } = this.state;
-
-        const percent = (correctAnswers / totalQuestions * 100).toPrecision(4);
-
-        if (end) {
-            return (
-                <View>
-                    <Text style={{ color: '#000000' }}>{`${correctAnswers} - ${percent}%`}</Text>
-                    <BtnRestart onPress={this.restart}>
-                        <Text>Restart</Text>
-                    </BtnRestart>
-
-                    <BtnBack onPress={() => this.props.navigation.goBack()}>
-                        <Text>Back</Text>
-                    </BtnBack>
-                </View>
-            )
-        }
-    }
-
-    renderQuestion = () => {
-        const { totalQuestions, remaningQuestions, currentQuestionIndex } = this.state;
-        const deck = this.props.navigation.getParam('deck');
-        return (
-            <View>
-                <QuestionContainer>
-                    <Question>{deck.cards[currentQuestionIndex].question}</Question>
-                    <NumberQuestions>{`${remaningQuestions}/${totalQuestions}`}</NumberQuestions>
-                </QuestionContainer>
-                {this.renderShowBtn()}
-                {this.renderAnswer()}
-            </View>
-        )
-    }
-
-    render() {
-        const { end } = this.state;
-        return (
-            <StyledView>
-                <Card>
-                    {end ? this.renderFinalResult() : this.renderQuestion()}
-                </Card>
-            </StyledView>
-        )
-    }
+    return (
+      <StyledView>
+        <Card>
+          {end ? this.renderFinalResult() : this.renderQuestion()}
+        </Card>
+      </StyledView>
+    )
+  }
 }
 
 export default connect()(Quiz);

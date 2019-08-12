@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { View, Platform, StatusBar } from 'react-native';
 import { Constants } from 'expo';
 import {
@@ -13,6 +13,7 @@ import { green, purple, white, darkGreen } from './utils/colors';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 import reducers from './reducers';
+import { setLocalNotification, clearLocalNotification } from './utils/helpers';
 
 function CustomStatusBar({ backgroundColor, ...props }) {
     return (
@@ -112,13 +113,20 @@ const Tabs = createStackNavigator({
 
 const AppContainer = createAppContainer(Tabs)
 
-export default function App() {
-    return (
-        <Provider store={createStore(reducers)}>
-            <View style={{ flex: 1 }}>
-                <CustomStatusBar backgroundColor={green} barStyle="light-content" />
-                <AppContainer />
-            </View>
-        </Provider>
-    );
+export default class App extends Component {
+
+    componentDidMount() {
+        setLocalNotification();
+    }
+
+    render() {
+        return(
+            <Provider store = { createStore(reducers) } >
+                <View style={{ flex: 1 }}>
+                    <CustomStatusBar backgroundColor={green} barStyle="light-content" />
+                    <AppContainer />
+                </View>
+            </Provider>
+        );
+    }
 }
